@@ -4,6 +4,7 @@ import '../services/api_service.dart';
 import '../services/storage_service.dart';
 
 class DependencyInjection {
+
   static Future<void> init() async {
     await _initServices();
   }
