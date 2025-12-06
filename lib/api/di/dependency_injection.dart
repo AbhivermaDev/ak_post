@@ -11,24 +11,21 @@ class DependencyInjection {
 
   static Future<void> _initServices() async {
     try {
-      // 1️⃣ Initialize StorageService FIRST
       final storageService = StorageService();
       await storageService.initialize();
       Get.put<StorageService>(storageService, permanent: true);
-      print('✅ StorageService initialized');
+      print('StorageService initialized');
 
-      // 2️⃣ Initialize ApiService
       final apiService = ApiService();
       await apiService.initialize();
       Get.put<ApiService>(apiService, permanent: true);
-      print('✅ ApiService initialized');
+      print('ApiService initialized');
 
-      // 3️⃣ Register HomeService
       Get.lazyPut<HomeService>(() => HomeService());
-      print('✅ HomeService registered');
+      print('HomeService registered');
 
     } catch (e) {
-      print('❌ DependencyInjection Error: $e');
+      print(' DependencyInjection Error: $e');
       rethrow;
     }
   }

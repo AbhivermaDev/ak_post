@@ -12,7 +12,7 @@ class HomeScreen extends GetView<HomeScreenController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Posts"),
+        title:  AppText(title: "Posts", fontSize: 18, color: appColors.appWhite,fontWeight: FontWeight.bold,),
         centerTitle: true,
         elevation: 0,
         backgroundColor: appColors.appCOlor,
@@ -25,7 +25,7 @@ class HomeScreen extends GetView<HomeScreenController> {
                 padding: const EdgeInsets.symmetric(
                     horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: appColors.appWhite,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Row(
@@ -37,13 +37,11 @@ class HomeScreen extends GetView<HomeScreenController> {
                       size: 16,
                     ),
                     const SizedBox(width: 4),
-                    Text(
+                    AppText(title:
                       '${controller.favoriteIds.length}',
-                      style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: appColors.black,
                       ),
-                    ),
                   ],
                 ),
               ),
@@ -62,13 +60,11 @@ class HomeScreen extends GetView<HomeScreenController> {
                   color: appColors.appCOlor,
                 ),
                 const SizedBox(height: 16),
-                const Text(
+                const AppText(title:
                   "Loading posts...",
-                  style: TextStyle(
                     fontSize: 14,
                     color: Colors.grey,
                   ),
-                ),
               ],
             ),
           );
@@ -85,13 +81,11 @@ class HomeScreen extends GetView<HomeScreenController> {
                   color: Colors.grey.shade300,
                 ),
                 const SizedBox(height: 16),
-                const Text(
+                const AppText(title:
                   "No posts available",
-                  style: TextStyle(
                     fontSize: 16,
                     color: Colors.grey,
                   ),
-                ),
               ],
             ),
           );
@@ -123,7 +117,7 @@ class HomeScreen extends GetView<HomeScreenController> {
                     duration: const Duration(milliseconds: 300),
                     curve: Curves.easeInOut,
                     decoration: BoxDecoration(
-                      color: isFav ? Colors.white : Colors.yellow.shade100,
+                      color: isFav ? appColors.appWhite : Colors.yellow.shade100,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
                         color: isFav
@@ -168,15 +162,13 @@ class HomeScreen extends GetView<HomeScreenController> {
                                       : Colors.orange.shade600,
                                   borderRadius: BorderRadius.circular(12),
                                 ),
-                                child: Text(
+                                child: AppText(title:
                                   'User ${post.userId ?? 0}',
-                                  style: const TextStyle(
-                                    color: Colors.white,
+                                    color: appColors.appWhite,
                                     fontSize: 11,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                              ),
 
                               GestureDetector(
                                 onTap: () {
@@ -187,8 +179,8 @@ class HomeScreen extends GetView<HomeScreenController> {
                                   padding: const EdgeInsets.all(6),
                                   decoration: BoxDecoration(
                                     color: isFav
-                                        ? Colors.white
-                                        : Colors.white.withOpacity(0.7),
+                                        ? appColors.appWhite
+                                        : appColors.appWhite.withOpacity(0.7),
                                     shape: BoxShape.circle,
                                     boxShadow: [
                                       BoxShadow(
@@ -230,9 +222,8 @@ class HomeScreen extends GetView<HomeScreenController> {
                                         : Colors.yellow.shade200,
                                     borderRadius: BorderRadius.circular(4),
                                   ),
-                                  child: Text(
+                                  child: AppText(title:
                                     'Post #${post.id ?? 0}',
-                                    style: TextStyle(
                                       fontSize: 10,
                                       fontWeight: FontWeight.w600,
                                       color: isFav
@@ -240,7 +231,6 @@ class HomeScreen extends GetView<HomeScreenController> {
                                           : Colors.orange.shade800,
                                     ),
                                   ),
-                                ),
                                 const SizedBox(height: 8),
 
 
@@ -314,27 +304,23 @@ class HomeScreen extends GetView<HomeScreenController> {
                                           : Colors.orange.shade800,
                                     ),
                                     const SizedBox(width: 4),
-                                    Text(
+                                    AppText(title:
                                       isFav ? 'Read' : 'New',
-                                      style: TextStyle(
                                         fontSize: 11,
                                         fontWeight: FontWeight.bold,
                                         color: isFav
                                             ? Colors.green.shade700
                                             : Colors.orange.shade800,
                                       ),
-                                    ),
+
                                   ],
                                 ),
                               ),
-                              Text(
+                              AppText(title:
                                 'Tap to ${isFav ? 'unread' : 'read'}',
-                                style: TextStyle(
                                   fontSize: 10,
                                   color: Colors.grey.shade500,
-                                  fontStyle: FontStyle.italic,
                                 ),
-                              ),
                             ],
                           ),
                         ),

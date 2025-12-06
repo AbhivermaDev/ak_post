@@ -1,19 +1,18 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' as getx;
+import '../../modules/dashboard/home/dashboard/view/home_screen_controller.dart';
 import '../config/app_urls.dart';
 import 'storage_service.dart';
 
 class ApiService {
   late Dio _dio;
   bool _isInitialized = false;
-
-  // Get StorageService from GetX
-  StorageService get _storageService => getx.Get.find<StorageService>();
+  HomeScreenController get _controller => getx.Get.find<HomeScreenController>();
 
   Future<void> initialize() async {
     if (_isInitialized) {
-      debugPrint('⚠️ ApiService already initialized');
+      debugPrint('️ ApiService already initialized');
       return;
     }
 
@@ -34,22 +33,6 @@ class ApiService {
       _dio.interceptors.add(
         InterceptorsWrapper(
           onRequest: (options, handler) {
-            // try {
-            //   // Add auth token if available
-            //   final token = _storageService.getAuthToken();
-            //
-            //   if (token != null && token.isNotEmpty) {
-            //     options.headers['Authorization'] = 'Bearer $token';
-            //     debugPrint('📤 Token added: ${token.substring(0, 20)}...');
-            //   }
-            //
-            //   debugPrint('📤 REQUEST[${options.method}] => ${options.path}');
-            //   debugPrint('📤 Headers: ${options.headers}');
-            //   debugPrint('📤 Data: ${options.data}');
-            // } catch (e) {
-            //   debugPrint('⚠️ Interceptor error: $e');
-            // }
-
             return handler.next(options);
           },
           onResponse: (response, handler) {
@@ -62,6 +45,10 @@ class ApiService {
             debugPrint('❌ Message: ${error.message}');
             debugPrint('❌ Type: ${error.type}');
             debugPrint('❌ Data: ${error.response?.data}');
+
+            // Show dialog for internet connectivity issues
+            _handleInternetError(error);
+
             return handler.next(error);
           },
         ),
@@ -73,6 +60,149 @@ class ApiService {
       debugPrint('❌ ApiService initialization failed: $e');
       rethrow;
     }
+  }
+
+  void _handleInternetError(DioException error) {
+    // Check if error is related to internet connectivity
+    if (error.type == DioExceptionType.connectionTimeout ||
+        error.type == DioExceptionType.sendTimeout ||
+        error.type == DioExceptionType.receiveTimeout ||
+        error.type == DioExceptionType.connectionError ||
+        error.message?.contains('SocketException') == true ||
+        error.message?.contains('Failed host lookup') == true) {
+
+      _showInternetErrorDialog();
+    }
+  }
+
+  void _showInternetErrorDialog() {
+    // Check if dialog is already showing
+    if (getx.Get.isDialogOpen == true) return;
+
+    getx.Get.dialog(
+      Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+        ),
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        child: Container(
+          constraints: BoxConstraints(maxWidth: 340),
+          padding: EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 20,
+                offset: Offset(0, 10),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Icon with gradient background
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.red.shade400, Colors.red.shade600],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.wifi_off_rounded,
+                  color: Colors.white,
+                  size: 40,
+                ),
+              ),
+              SizedBox(height: 20),
+
+              // Title
+              Text(
+                'No Internet',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey[900],
+                ),
+              ),
+              SizedBox(height: 12),
+
+              // Description
+              Text(
+                'Please check your connection\nand try again',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 15,
+                  color: Colors.grey[600],
+                  height: 1.5,
+                ),
+              ),
+              SizedBox(height: 28),
+
+              // Buttons
+              Row(
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () {
+                        getx.Get.back();
+                      },
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Text(
+                        'Cancel',
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                      _controller.fetchVehicles();
+                      getx.Get.back();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue[600],
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        padding: EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Text(
+                        'Retry',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+      barrierDismissible: false,
+    );
   }
 
   void _checkInitialized() {
